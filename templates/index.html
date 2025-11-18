@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Journal</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Daily Journal</h1>
+
+    <form action="/new" method="POST">
+        <textarea name="content" placeholder="Write your thoughts..." required></textarea>
+        <button type="submit">Add Entry</button>
+    </form>
+
+    <h2>Previous Entries</h2>
+
+    {% for entry in entries %}
+        <div class="entry">
+            <h3>{{ entry[1] }}</h3>
+            <p>{{ entry[2] }}</p>
+        </div>
+    {% endfor %}
+</body>
+</html>
