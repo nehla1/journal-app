@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}New Entry{% endblock %}
+{% block content %}
+  <h1>New Entry</h1>
+  <form method="post" action="{{ url_for('new_entry') }}">
+    <textarea name="content" placeholder="Write your thoughts..." required></textarea><br>
+    <label>
+      Post to:
+      <select name="journal_id">
+        <option value="none">Personal (only you)</option>
+        {% for j in journals %}
+          <option value="{{ j['id'] }}">Journal: {{ j['name'] }} (ID {{ j['id'] }})</option>
+        {% endfor %}
+      </select>
+    </label><br><br>
+    <label><input type="checkbox" name="is_public"> Make public (anyone with link can read)</label><br><br>
+    <button type="submit">Save Entry</button>
+  </form>
+{% endblock %}

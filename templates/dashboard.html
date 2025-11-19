@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+  <h1>Welcome {{ user.name or user.email }}</h1>
+
+  <section>
+    <h2>Your personal entries</h2>
+    {% if personal %}
+      {% for e in personal %}
+        <div class="entry" data-date="{{ e['entry_date'] }}">
+          <h3>{{ e['entry_date'] }}</h3>
+          <p>{{ e['content'] }}</p>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>No personal entries yet. Make one: <a href="{{ url_for('new_entry') }}">New Entry</a></p>
+    {% endif %}
+  </section>
+
+  <section>
+    <h2>Your journals</h2>
+    {% if journals %}
+      <ul>
+      {% for j in journals %}
+        <li><strong>{{ j['name'] }}</strong> (ID: {{ j['id'] }})</li>
+      {% endfor %}
+      </ul>
+      <p>Share the journal ID with friends so they can join.</p>
+    {% else %}
+      <p>No journals yet. <a href="{{ url_for('create_journal') }}">Create one</a> or <a href="{{ url_for('join_journal') }}">join</a>.</p>
+    {% endif %}
+  </section>
+{% endblock %}

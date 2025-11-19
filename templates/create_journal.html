@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Create Journal{% endblock %}
+{% block content %}
+  <h1>Create a Shared Journal</h1>
+  <form method="post" action="{{ url_for('create_journal') }}">
+    <input name="name" placeholder="Journal name" required><br><br>
+    <button type="submit">Create</button>
+  </form>
+{% endblock %}

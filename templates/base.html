@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}Journal{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div id="particles-js"></div>
+
+  <nav>
+    {% if session.user_id %}
+      <a href="{{ url_for('dashboard') }}">Dashboard</a> |
+      <a href="{{ url_for('entries_page') }}">All Entries</a> |
+      <a href="{{ url_for('calendar_page') }}">Calendar</a> |
+      <a href="{{ url_for('new_entry') }}">New Entry</a> |
+      <a href="{{ url_for('create_journal') }}">Create Journal</a> |
+      <a href="{{ url_for('join_journal') }}">Join Journal</a> |
+      <a href="{{ url_for('logout') }}">Logout</a>
+    {% else %}
+      <a href="{{ url_for('login') }}">Login</a> |
+      <a href="{{ url_for('signup') }}">Signup</a>
+    {% endif %}
+  </nav>
+
+  <main>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class="flashes">
+        {% for category, msg in messages %}
+          <li class="flash {{ category }}">{{ msg }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <script src="{{ url_for('static', filename='particles.js') }}"></script>
+  <!-- particles initialization -->
+  <script>
+  particlesJS("particles-js", {
+    "particles": {
+      "number": {"value": 40},
+      "size": {"value": 3},
+      "color": {"value": "#ffffff"},
+      "line_linked": {"enable": true, "distance": 120, "color": "#ffffff", "opacity": 0.15},
+      "move": {"speed": 2}
+    }
+  });
+  </script>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>
