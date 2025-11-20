@@ -285,24 +285,60 @@ def join_journal():
     return render_template("join_journal.html")
 
 # ---------- View entries for a journal or personal entries (list page) ----------
+# ---------- View entries for a journal or personal entries (list page) ----------
 @app.route("/entries")
 @login_required
 def entries_page():
     db = get_db()
-    user = g.get("user") or current_user()
-    # show entries the user can access: personal OR in journals they belong to, OR public entries
+    user = current_user()  # get full user row
+
+    # fetch entries the user can access
     rows = db.execute("""
-    SELECT e.*, u.email as owner_email, j.name as journal_name
-    FROM entries e
-    JOIN users u ON u.id = e.owner_id
-    LEFT JOIN journals j ON j.id = e.journal_id
-    WHERE
-        (e.owner_id = ?)
-        OR (e.journal_id IN (SELECT journal_id FROM journal_members WHERE user_id = ?))
-        OR (e.is_public = 1)
-    ORDER BY e.entry_date DESC, e.id DESC
+        SELECT e.*, u.email as owner_email, j.name as journal_name
+        FROM entries e
+        JOIN users u ON u.id = e.owner_id
+        LEFT JOIN journals j ON j.id = e.journal_id
+        WHERE
+            (e.owner_id = ?)
+            OR (e.journal_id IN (SELECT journal_id FROM journal_members WHERE user_id = ?))
+            OR (e.is_public = 1)
+        ORDER BY e.entry_date DESC, e.id DESC
     """, (user["id"], user["id"])).fetchall()
+
+    # DEBUG: print to console so you can see what Flask got
+    print("DEBUG entries:", rows)
+
     return render_template("entries.html", entries=rows)
+# ---------- View a single entry ----------
+@app.route("/entry/<int:entry_id>")
+@login_required
+def entry_detail(entry_id):
+    db = get_db()
+    user = current_user()
+
+    entry = db.execute("""
+        SELECT e.*, u.email as owner_email, j.name as journal_name
+        FROM entries e
+        JOIN users u ON u.id = e.owner_id
+        LEFT JOIN journals j ON j.id = e.journal_id
+        WHERE e.id = ?
+    """, (entry_id,)).fetchone()
+
+    if not entry:
+        flash("Entry not found.", "danger")
+        return redirect(url_for("entries_page"))
+
+    # Optional: restrict access if entry is private and user is not owner or journal member
+    if entry["is_public"] == 0 and entry["owner_id"] != user["id"]:
+        members = db.execute("SELECT user_id FROM journal_members WHERE journal_id = ?", (entry["journal_id"],)).fetchall()
+        member_ids = [m["user_id"] for m in members]
+        if entry["journal_id"] and user["id"] not in member_ids:
+            flash("You cannot view this entry.", "danger")
+            return redirect(url_for("entries_page"))
+
+    return render_template("entry_detail.html", entry=entry)
+
+
 
 # ---------- Calendar page showing accessible entries (with JS calendar UI) ----------
 @app.route("/calendar")

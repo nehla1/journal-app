@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Entries{% endblock %}
+{% block content %}
+  <h1>Entries you can see</h1>
+  <div id="entries-container">
+    {% for e in entries %}
+      <a href="{{ url_for('entry_detail', entry_id=e['id']) }}">
+        <div class="entry" data-date="{{ e['entry_date'] }}">
+          <h3>{{ e['entry_date'] }} {% if e['journal_name'] %} - {{ e['journal_name'] }}{% endif %}</h3>
+          <p>{{ e['content'] }}</p>
+          <small>By {{ e['owner_email'] }}</small>
+        </div>
+      </a>
+    {% else %}
+      <p>No entries available.</p>
+    {% endfor %}
+  </div>
+
+  <script>
+    // Show all entries immediately
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.entry').forEach(e => e.style.display = 'block');
+    });
+
+    // Optional: if you later add calendar filtering
+    function filterEntriesByDate(date) {
+      document.querySelectorAll('.entry').forEach(e => {
+        e.style.display = e.dataset.date === date ? 'block' : 'none';
+      });
+    }
+  </script>
+{% endblock %}

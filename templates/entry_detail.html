@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Entry Detail{% endblock %}
+
+{% block content %}
+  <div class="entry-detail">
+    <h1>{{ entry['entry_date'] }} {% if entry['journal_name'] %} - {{ entry['journal_name'] }}{% endif %}</h1>
+
+    <p style="white-space: pre-line; margin-top: 20px;">
+      {{ entry['content'] }}
+    </p>
+
+    <small>By {{ entry['owner_email'] }}</small>
+
+    <br><br>
+    <a href="{{ url_for('entries_page') }}">← Back to entries</a>
+  </div>
+{% endblock %}
