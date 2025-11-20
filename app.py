@@ -361,6 +361,10 @@ def calendar_page():
     # we'll pass entries to template and JS will render calendar
     return render_template("calendar.html", entries=rows)
 
-# ------------------- Run -------------------
+import os
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    debug = os.environ.get("FLASK_ENV") != "production"
+    app.run(host="0.0.0.0", port=port, debug=debug)
+
